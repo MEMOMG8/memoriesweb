@@ -52,6 +52,12 @@
   </style>
 </head>
 <body>
+  <script>
+  if (localStorage.getItem('memorias_auth') !== '1') {
+    location.href = 'login.html';
+  }
+  </script>
+
   <div id="app">
     <!-- Aquí inyectamos dinámica -->
   </div>

@@ -46,6 +46,11 @@
   </style>
 </head>
 <body>
+  <script>
+    if (localStorage.getItem('memorias_auth') !== '1') {
+      location.href = 'login.html';
+    }
+  </script>
 
   <h1>Memorias – Escanea o haz click</h1>
   <div id="grid"></div>
