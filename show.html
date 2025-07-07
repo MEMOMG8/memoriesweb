@@ -82,9 +82,9 @@
       return;
     }
 
-    // 4) Renderizar usando row.imgUrl (no row.imageUrl)
+    // 4) Renderizar usando row.imageUrl
     document.getElementById('app').innerHTML = `
-      <img src="${row.imgUrl}" alt="Recuerdo ${row.id}" />
+      <img src="${row.imageUrl}" alt="Recuerdo ${row.id}" />
       <p>${row.caption}</p>
       <a class="back" href="index.html">← Volver al índice</a>
     `;
