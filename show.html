@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recuerdo</title>
+  <!-- 1) Carga PapaParse desde unpkg -->
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <div id="app">Cargando…</div>
+
+  <!-- 2) Tu propio script -->
+  <script>
+  (async () => {
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
+
+    // 1. Leemos el parámetro ?id=XXX de la URL
+    const params = new URLSearchParams(location.search);
+    const myId = params.get('id');
+    if (!myId) {
+      return document.getElementById('app').innerHTML = '<p>No se proporcionó ningún ID.</p>';
+    }
+
+    // 2. Descargamos y parseamos el CSV con PapaParse
+    const res  = await fetch(csvUrl);
+    const text = await res.text();
+    const parsed = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+
+    // 3. Buscamos la fila con ese ID
+    const row = parsed.find(r => r.id === myId);
+    if (!row) {
+      return document.getElementById('app').innerHTML = `<p>ID "${myId}" no encontrado.</p>`;
+    }
+
+    // 4. Mostramos la imagen y el caption
+    document.getElementById('app').innerHTML = `
+      <img src="${row.imageUrl}" alt="Recuerdo ${row.id}" style="max-width:100%;height:auto"/>
+      <p style="text-align:center">${row.caption}</p>
+    `;
+  })();
+  </script>
+</body>
+</html>
