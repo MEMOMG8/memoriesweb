@@ -4,98 +4,137 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recuerdo</title>
+
+  <!-- ① Font Imports -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Montserrat:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
   <style>
-    /* Reset muy ligero */
+    /* ② Color Palette */
+    :root {
+      --bg-page:   #fff1f8;
+      --card-bg:   #ffe1e8;
+      --accent:    #ff6d6d;
+      --text:      #333333;
+      --shadow:    rgba(0,0,0,0.1);
+      --radius:    12px;
+    }
+
+    /* ③ Global Reset & Body */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      width: 100%; height: 100%;
-      background: #f7f7f7;
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      height: 100%; width: 100%;
+      background: linear-gradient(135deg, var(--bg-page) 0%, var(--card-bg) 100%);
+      font-family: 'Dancing Script', cursive;
+      display: flex; align-items: center; justify-content: center;
       padding: 16px;
     }
+
+    /* ④ App Container */
     #app {
+      background: #ffffff;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--shadow);
+      overflow: hidden;
       max-width: 600px;
       width: 100%;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-    #app img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-    #app p {
-      padding: 16px;
-      font-size: 1.1rem;
-      color: #333;
       text-align: center;
-      line-height: 1.4;
     }
+
+    /* ⑤ Image Fade-In */
+    #app img {
+      width: 100%; height: auto;
+      opacity: 0;
+      transition: opacity 0.6s ease-in;
+    }
+    #app img.loaded {
+      opacity: 1;
+    }
+
+    /* ⑥ Caption & Heartbeat */
+    #app p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      padding: 16px;
+      line-height: 1.4;
+      position: relative;
+    }
+    #app p::before {
+      content: '❤️';
+      display: inline-block;
+      margin-right: 0.5rem;
+      animation: heartbeat 1.5s infinite;
+    }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      25%      { transform: scale(1.2); }
+      40%      { transform: scale(1); }
+    }
+
+    /* ⑦ Back Button */
     .back {
       display: inline-block;
       margin: 0 16px 16px;
-      padding: 8px 12px;
-      background: #0066cc;
+      padding: 8px 16px;
+      background: var(--accent);
       color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      border-radius: var(--radius);
       text-decoration: none;
-      border-radius: 4px;
-      font-size: 0.9rem;
+      transition: transform 0.2s;
     }
     .back:hover {
-      background: #0055aa;
+      transform: translateY(-2px);
     }
   </style>
 </head>
+
 <body>
+  <!-- ⑧ Auth Guard -->
   <script>
-    // If not authenticated, redirect to login.html *with* this page as a redirect target
     if (localStorage.getItem('memorias_auth') !== '1') {
       const redirect = encodeURIComponent(location.href);
       location.href = `login.html?redirect=${redirect}`;
     }
   </script>
 
-  <div id="app">
-    <!-- Aquí inyectamos dinámica -->
-  </div>
+  <div id="app"></div>
 
-  <!-- PapaParse desde CDN -->
+  <!-- ⑨ PapaParse -->
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
   (async () => {
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
 
-    // 1) Leer parámetro id
-    const params = new URLSearchParams(location.search);
-    const myId = params.get('id');
+    // 1) Get ID
+    const myId = new URLSearchParams(location.search).get('id');
     if (!myId) {
       document.getElementById('app').innerHTML = '<p>No se proporcionó ningún ID.</p>';
       return;
     }
 
-    // 2) Obtener y parsear CSV
+    // 2) Fetch & parse
     const res  = await fetch(csvUrl);
     const text = await res.text();
     const rows = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
 
-    // 3) Buscar la fila
+    // 3) Find row
     const row = rows.find(r => r.id === myId);
     if (!row) {
       document.getElementById('app').innerHTML = `<p>ID "${myId}" no encontrado.</p>`;
       return;
     }
 
-    // 4) Renderizar usando row.imageUrl
+    // 4) Render and fade in image
     document.getElementById('app').innerHTML = `
-      <img src="${row.imageUrl}" alt="Recuerdo ${row.id}" />
+      <img id="photo" src="${row.imageUrl}" alt="Recuerdo ${row.id}" />
       <p>${row.caption}</p>
       <a class="back" href="index.html">← Volver al índice</a>
     `;
+    document.getElementById('photo').onload = e => e.target.classList.add('loaded');
   })();
   </script>
 </body>

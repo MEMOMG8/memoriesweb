@@ -3,105 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Memorias – Índice</title>
-  <!-- Puedes cambiar estos estilos a tu gusto -->
+  <title>Mapa del Amor</title>
+
+  <!-- ① Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Montserrat:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
   <style>
+    :root {
+      --bg-page: #fff1f8;
+      --card-bg: #ffe1e8;
+      --accent:  #ff6d6d;
+      --text:    #333333;
+      --shadow:  rgba(0,0,0,0.1);
+      --radius:  12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: sans-serif;
-      background-color: #f0f2f5;
-      margin: 0;
+      background: linear-gradient(135deg, var(--bg-page), var(--card-bg));
+      font-family: 'Dancing Script', cursive;
       padding: 2rem;
+      min-height: 100vh;
     }
     h1 {
       text-align: center;
       margin-bottom: 1.5rem;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--accent);
     }
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
       gap: 1rem;
     }
     .card {
-      background: #ffc5d3;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background: #ffffff;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--shadow);
       padding: 1rem;
       text-align: center;
       cursor: pointer;
-      transition: transform .15s;
+      transition: transform 0.2s;
     }
-    .card:hover {
-      transform: translateY(-4px);
-    }
-    .card canvas {
-      max-width: 100%;
-      height: auto;
-      margin-bottom: 0.5rem;
-    }
+    .card:hover { transform: scale(1.03); }
     .card p {
-      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      margin-top: 0.5rem;
+      color: var(--text);
       font-size: 0.9rem;
-      color: #333;
     }
+    .card canvas { width: 100%; height: auto; }
   </style>
 </head>
 <body>
+  <!-- ② Protect index -->
   <script>
     if (localStorage.getItem('memorias_auth') !== '1') {
-      location.href = 'login.html';
+      const redirect = encodeURIComponent('index.html');
+      location.href = `login.html?redirect=${redirect}`;
     }
   </script>
 
   <h1>Mapa del Amor</h1>
   <div id="grid"></div>
 
-  <!-- 1) PapaParse -->
+  <!-- ③ Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <!-- 2) QRCode.js -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
   <script>
   (async () => {
-    // ➜  Pega aquí tu URL de CSV publicado:
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
-
-    // 1. Descarga y parsea el CSV
-    const res = await fetch(csvUrl);
+    const res  = await fetch(csvUrl);
     const text = await res.text();
     const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
-
-    // 2. Recorre cada fila y crea una "tarjeta"
     const grid = document.getElementById('grid');
+
     data.forEach(row => {
-      const { id, caption } = row;
-
-      // 2.1 Construye la URL destino: show.html?id=ID
-      //    Si publicaste en GitHub Pages en memoriaweb/
-      const base = location.origin + location.pathname.replace('index.html','');
-      const link = `${base}show.html?id=${encodeURIComponent(id)}`;
-
-      // 2.2 Crea la tarjeta
+      const link = `show.html?id=${encodeURIComponent(row.id)}`;
       const card = document.createElement('div');
       card.className = 'card';
-      card.addEventListener('click', () => {
-        location.href = link;
-      });
+      card.onclick = () => location.href = link;
 
-      // 2.3 Genera el QR en un <canvas>
       const canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, link, { width: 160, margin: 1 });
+      QRCode.toCanvas(canvas, link, { width: 140, margin: 1 });
 
-      // 2.4 Pie de foto
       const p = document.createElement('p');
-      p.textContent = caption;
+      p.textContent = row.caption;
 
-      // 2.5 Empaqueta todo
-      card.appendChild(canvas);
-      card.appendChild(p);
-      grid.appendChild(card);
+      card.append(canvas, p);
+      grid.append(card);
     });
   })();
   </script>
-
 </body>
 </html>

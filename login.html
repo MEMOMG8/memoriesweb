@@ -4,42 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Acceso privado</title>
+
+  <!-- ① Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Montserrat:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
   <style>
+    :root {
+      --bg-page: #fff1f8;
+      --accent:  #ff6d6d;
+      --shadow:  rgba(0,0,0,0.1);
+      --radius:  8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      font-family: sans-serif;
-      background: #FFEE8C;
+      background: var(--bg-page);
+      display: flex; align-items: center; justify-content: center;
+      height: 100vh; font-family: 'Dancing Script', cursive;
     }
     .login-box {
-      background: #fff;
+      background: #ffffff;
       padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--shadow);
       text-align: center;
-      width: 300px;
+      width: 320px;
+    }
+    .login-box h2 {
+      font-family: 'Montserrat', sans-serif;
+      margin-bottom: 1rem;
     }
     .login-box input {
       width: 100%;
-      padding: 0.5rem;
+      padding: 0.6rem;
       margin: 1rem 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
       font-size: 1rem;
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+    .login-box input:focus {
+      box-shadow: 0 0 0 3px rgba(255,109,109,0.3);
     }
     .login-box button {
-      padding: 0.5rem 1rem;
-      background: #0066cc;
-      border: none;
+      font-family: 'Montserrat', sans-serif;
+      padding: 0.6rem 1.2rem;
+      background: var(--accent);
       color: #fff;
-      border-radius: 4px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
       cursor: pointer;
+      transition: transform 0.1s;
     }
     .login-box button:hover {
-      background: #0055aa;
+      transform: translateY(-2px);
     }
   </style>
 </head>
@@ -50,27 +72,23 @@
     <button onclick="doLogin()">Entrar</button>
   </div>
 
-<script>
-  // Read the ?redirect=… parameter (or default to index.html)
-  const params   = new URLSearchParams(location.search);
-  const redirect = params.get('redirect') || 'index.html';
+  <script>
+    const params   = new URLSearchParams(location.search);
+    const redirect = params.get('redirect') || 'index.html';
 
-  function doLogin() {
-    const pwd = document.getElementById('pwd').value;
-    if (pwd === 'Memitocrack') {
-      localStorage.setItem('memorias_auth', '1');
-      // Go back to wherever we came from
-      location.href = decodeURIComponent(redirect);
-    } else {
-      alert('Contraseña incorrecta');
+    function doLogin() {
+      const pwd = document.getElementById('pwd').value;
+      if (pwd === 'Memitocrack') {
+        localStorage.setItem('memorias_auth', '1');
+        location.href = decodeURIComponent(redirect);
+      } else {
+        alert('Contraseña incorrecta');
+      }
     }
-  }
 
-  // If already authed, bounce right back
-  if (localStorage.getItem('memorias_auth') === '1') {
-    location.href = decodeURIComponent(redirect);
-  }
-</script>
-
+    if (localStorage.getItem('memorias_auth') === '1') {
+      location.href = decodeURIComponent(redirect);
+    }
+  </script>
 </body>
 </html>
