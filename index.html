@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mapa del Amor</title>
 
-  <!-- ① Fonts -->
+  <!-- Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Montserrat:wght@400;600&display=swap"
     rel="stylesheet"
@@ -58,7 +58,7 @@
   </style>
 </head>
 <body>
-  <!-- ② Protect index -->
+  <!-- protect the index page -->
   <script>
     if (localStorage.getItem('memorias_auth') !== '1') {
       const redirect = encodeURIComponent('index.html');
@@ -69,19 +69,25 @@
   <h1>Mapa del Amor</h1>
   <div id="grid"></div>
 
-  <!-- ③ Scripts -->
+  <!-- PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <!-- QRCode.js from Unpkg so QRCode.toCanvas is available -->
+  <script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js"></script>
+
   <script>
   (async () => {
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
+    const csvUrl = 
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
     const res  = await fetch(csvUrl);
     const text = await res.text();
     const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
     const grid = document.getElementById('grid');
 
     data.forEach(row => {
-      const link = `show.html?id=${encodeURIComponent(row.id)}`;
+      // build absolute link so QR works anywhere:
+      const base = location.origin + location.pathname.replace('index.html','');
+      const link = `${base}show.html?id=${encodeURIComponent(row.id)}`;
+
       const card = document.createElement('div');
       card.className = 'card';
       card.onclick = () => location.href = link;
