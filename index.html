@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mapa del Amor</title>
 
-  <!-- Fonts -->
+  <!-- Fuentes -->
   <link
     href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Montserrat:wght@400;600&display=swap"
     rel="stylesheet"
@@ -13,16 +13,16 @@
 
   <style>
     :root {
-      --bg-page: #fff1f8;
-      --card-bg: #ffe1e8;
-      --accent:  #ff6d6d;
-      --text:    #333333;
-      --shadow:  rgba(0,0,0,0.1);
-      --radius:  12px;
+      --bg1: #fff1f8;
+      --bg2: #ffe1e8;
+      --accent: #ff6d6d;
+      --text:   #333;
+      --shadow: rgba(0,0,0,0.1);
+      --radius: 12px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: linear-gradient(135deg, var(--bg-page), var(--card-bg));
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
       font-family: 'Dancing Script', cursive;
       padding: 2rem;
       min-height: 100vh;
@@ -39,30 +39,30 @@
       gap: 1rem;
     }
     .card {
-      background: #ffffff;
+      background: #fff;
       border-radius: var(--radius);
       box-shadow: 0 4px 12px var(--shadow);
       padding: 1rem;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform .2s;
     }
     .card:hover { transform: scale(1.03); }
+    .card canvas { width:100%; height:auto; }
     .card p {
+      margin-top: .5rem;
       font-family: 'Montserrat', sans-serif;
-      margin-top: 0.5rem;
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: .9rem;
     }
-    .card canvas { width: 100%; height: auto; }
   </style>
 </head>
 <body>
-  <!-- protect the index page -->
+  <!-- Protección: si no estás logueado te manda al login -->
   <script>
     if (localStorage.getItem('memorias_auth') !== '1') {
-      const redirect = encodeURIComponent('index.html');
-      location.href = `login.html?redirect=${redirect}`;
+      const r = encodeURIComponent('index.html');
+      location.href = `login.html?redirect=${r}`;
     }
   </script>
 
@@ -71,20 +71,19 @@
 
   <!-- PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <!-- QRCode.js from Unpkg so QRCode.toCanvas is available -->
+  <!-- QRCode.js -->
   <script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
   (async () => {
-    const csvUrl = 
-      'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFxPH-c93NHI1iaykJAMBuGn5nPMcS-LZU3OPlb2HjB_nR4bP11kc3ghxPjaNH6sXTrndAY4v2QPTM/pub?gid=0&single=true&output=csv';
     const res  = await fetch(csvUrl);
     const text = await res.text();
-    const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
+    const { data } = Papa.parse(text,{header:true,skipEmptyLines:true});
     const grid = document.getElementById('grid');
 
     data.forEach(row => {
-      // build absolute link so QR works anywhere:
+      // construye la URL absoluta para show.html
       const base = location.origin + location.pathname.replace('index.html','');
       const link = `${base}show.html?id=${encodeURIComponent(row.id)}`;
 
@@ -93,12 +92,12 @@
       card.onclick = () => location.href = link;
 
       const canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, link, { width: 140, margin: 1 });
+      QRCode.toCanvas(canvas, link, { width:140, margin:1 });
 
       const p = document.createElement('p');
       p.textContent = row.caption;
 
-      card.append(canvas, p);
+      card.append(canvas,p);
       grid.append(card);
     });
   })();
