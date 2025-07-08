@@ -50,22 +50,27 @@
     <button onclick="doLogin()">Entrar</button>
   </div>
 
-  <script>
-    function doLogin() {
-      const pwd = document.getElementById('pwd').value;
-      // Cambia 'TU_CONTRASENA_SECRETA' por la contraseña que elijas
-      if (pwd === 'TU_CONTRASENA_SECRETA') {
-        localStorage.setItem('memorias_auth', '1');
-        location.href = 'index.html';
-      } else {
-        alert('Contraseña incorrecta');
-      }
-    }
+<script>
+  // Read the ?redirect=… parameter (or default to index.html)
+  const params   = new URLSearchParams(location.search);
+  const redirect = params.get('redirect') || 'index.html';
 
-    // Si ya está logueado, redirige al índice
-    if (localStorage.getItem('memorias_auth') === '1') {
-      location.href = 'index.html';
+  function doLogin() {
+    const pwd = document.getElementById('pwd').value;
+    if (pwd === 'Memitocrack') {
+      localStorage.setItem('memorias_auth', '1');
+      // Go back to wherever we came from
+      location.href = decodeURIComponent(redirect);
+    } else {
+      alert('Contraseña incorrecta');
     }
-  </script>
+  }
+
+  // If already authed, bounce right back
+  if (localStorage.getItem('memorias_auth') === '1') {
+    location.href = decodeURIComponent(redirect);
+  }
+</script>
+
 </body>
 </html>

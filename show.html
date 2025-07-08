@@ -53,9 +53,11 @@
 </head>
 <body>
   <script>
-  if (localStorage.getItem('memorias_auth') !== '1') {
-    location.href = 'login.html';
-  }
+    // If not authenticated, redirect to login.html *with* this page as a redirect target
+    if (localStorage.getItem('memorias_auth') !== '1') {
+      const redirect = encodeURIComponent(location.href);
+      location.href = `login.html?redirect=${redirect}`;
+    }
   </script>
 
   <div id="app">
