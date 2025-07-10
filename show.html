@@ -96,10 +96,12 @@
   <!-- ⑧ Auth Guard -->
   <script>
     if (localStorage.getItem('memorias_auth') !== '1') {
-      const redirect = encodeURIComponent(location.href);
-      location.href = `login.html?redirect=${redirect}`;
+      // redirect back to *this* photo page
+      const r = encodeURIComponent(location.href);
+      location.href = `login.html?redirect=${r}`;
     }
   </script>
+
 
   <div id="app"></div>
 
