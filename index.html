@@ -82,9 +82,13 @@
     const { data } = Papa.parse(text,{header:true,skipEmptyLines:true});
     const grid = document.getElementById('grid');
 
+    // Decide base URL: if running on localhost, use that; otherwise use your GH Pages URL
+    const PROD_BASE = 'https://memomg8.github.io/memoriesweb/';
+    const base = location.hostname === '127.0.0.1' || location.hostname === 'localhost'
+      ? (location.origin + location.pathname.replace('index.html',''))
+      : PROD_BASE;
+
     data.forEach(row => {
-      // construye la URL absoluta para show.html
-      const base = location.origin + location.pathname.replace('index.html','');
       const link = `${base}show.html?id=${encodeURIComponent(row.id)}`;
 
       const card = document.createElement('div');
